@@ -19,33 +19,37 @@ def extract_nutrition_info(text):
     protein_match = re.search(r'(\d+)(?=/\d+g)', lines[2])
     '''
     fat_match = re.search(r'(\d+)(?=/\d+ g)', text)
+    calories_match = re.search(r'(\d+)\s*/\s*\d+\s*kcal', text)
     
     # Print regex matches for debugging
-    print("matches:", matches)
+    print("matches:", matches, calories_match)
 
     
     # Extract values if found
     '''carbs = carbs_match.group(1) if carbs_match else None
     protein = protein_match.group(1) if protein_match else None'''
     fat = fat_match.group(1) if fat_match else None
+    calories = calories_match.group(1) if calories_match else None
 
     carbs = matches[0] if len(matches) > 0 else None
     protein = matches[1] if len(matches) > 1 else None
 
-    return carbs, protein, fat
+    return carbs, protein, fat, calories
 
 def process_screenshot():
     image = Image.open(screenshot_path)
 
     extracted_text = pytesseract.image_to_string(image)
-    carbs, protein, fat = extract_nutrition_info(extracted_text)
+    carbs, protein, fat, calories = extract_nutrition_info(extracted_text)
     print("Extracted Text:\n", extracted_text)
 
     data = {
             'timestamp': datetime.now().isoformat(),
             'Carbohydrates': carbs,
             'Protein': protein,
-            'Fat': fat
+            'Fat': fat,
+            'Calories': calories
+
         }
 
     json_data = json.dumps(data, indent=4)
